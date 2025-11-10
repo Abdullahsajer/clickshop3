@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول | ASQ لقطع الغيار</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: linear-gradient(135deg, #0033aa, #00ccff);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      width: 320px;
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #00cc66;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00e67a;
+    }
+
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    /* جعل الفوتر دائمًا في الأسفل */
+    footer {
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ✅ استدعاء الهيدر -->
+  {% include 'header.html' %}
+
+  <main>
+    <form method="POST" class="login-box">
+      {% csrf_token %}
+      <h2>تسجيل الدخول</h2>
+      <input type="text" name="username" placeholder="اسم المستخدم" required>
+      <input type="password" name="password" placeholder="كلمة المرور" required>
+      <button type="submit">دخول</button>
+      <p>ليس لديك حساب؟ <a href="{% url 'register' %}">إنشاء حساب</a></p>
+    </form>
+  </main>
+
+  <!-- ✅ استدعاء الفوتر -->
+  {% include 'footer.html' %}
+
+</body>
+</html>
