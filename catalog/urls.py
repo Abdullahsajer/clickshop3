@@ -1,6 +1,9 @@
 from django.urls import path
+from . import views
 
-# لا يوجد مسارات حاليا
+app_name = 'catalog'
+
 urlpatterns = [
-
+    # 🏠 الصفحة الرئيسية
+    path('', views.home_view, name='home'),
 ]

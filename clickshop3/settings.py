@@ -1,21 +1,21 @@
 from pathlib import Path
 
-# المسار الأساسي للمشروع
+# 📁 المسار الأساسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# مفتاح التشفير (يجب تغييره في بيئات الإنتاج)
+# 🔑 مفتاح التشفير (يجب تغييره في بيئات الإنتاج)
 SECRET_KEY = 'django-insecure-mwrbq76gclmb8ykb=70@3^0*-e-d(!wxgc17&7bfsp1+86g3&y'
 
-# وضع التطوير
+# ⚙️ وضع التطوير
 DEBUG = True
 
-# العناوين المسموح بها
+# 🌐 العناوين المسموح بها
 ALLOWED_HOSTS = []
 
 
-# التطبيقات المثبتة
+# 📦 التطبيقات المثبتة
 INSTALLED_APPS = [
-    # تطبيقات Django الأساسية
+    # 🧩 تطبيقات Django الأساسية
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -24,13 +24,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # ✅ تطبيقات المشروع المخصصة
-    'accounts',    # إدارة المستخدمين والحسابات
-    'catalog',     # المنتجات والتصنيفات
-    'sales',       # السلة والطلبات والدفع
+    'accounts.apps.AccountsConfig',  # إدارة الحسابات والمستخدمين
+    'catalog.apps.CatalogConfig',    # إدارة المنتجات والتصنيفات
+    'sales.apps.SalesConfig',        # إدارة الطلبات والسلة
 ]
 
 
-# الوسائط الوسطية (Middleware)
+# 🧱 الوسائط الوسطية (Middleware)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -42,17 +42,18 @@ MIDDLEWARE = [
 ]
 
 
-# ملف URLs الجذري
+# 📍 ملف URLs الجذري
 ROOT_URLCONF = 'clickshop3.urls'
 
 
-# إعدادات الـ Templates
+# 🧾 إعدادات القوالب (Templates)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates',  # مجلد عام للقوالب
-        ],
+
+        # ✅ تعريف مجلد القوالب العام داخل المشروع
+        'DIRS': [BASE_DIR / 'templates'],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,11 +67,11 @@ TEMPLATES = [
 ]
 
 
-# WSGI
+# 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
 
-# قاعدة البيانات
+# 🗄️ إعداد قاعدة البيانات (SQLite)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -79,28 +80,34 @@ DATABASES = {
 }
 
 
-# التحقق من كلمات المرور
+# 🔐 التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 
-# اللغة والوقت
+# 🌍 إعداد اللغة والمنطقة الزمنية
 LANGUAGE_CODE = 'ar'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_TZ = True
 
 
-# الملفات الثابتة (static)
-STATIC_URL = 'static/'
+# 🖼️ إعداد الملفات الثابتة (Static Files)
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # مجلد للملفات الثابتة العامة
+    BASE_DIR / 'static',  # مجلد الملفات الثابتة أثناء التطوير
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # مجلد تجميع الملفات الثابتة عند النشر
 
 
-# تعريف تلقائي للأعمدة المبدئية في الـ Models
+# 🖼️ إعداد ملفات الوسائط (Media)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# 🆔 تعريف تلقائي للأعمدة في النماذج
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

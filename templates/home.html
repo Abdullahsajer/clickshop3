@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الرئيسية | ASQ لقطع الغيار</title>
+</head>
+<body>
+
+  <!-- ✅ استدعاء الهيدر -->
+  {% include 'header.html' %}
+
+  <main class="home-content">
+    <section class="hero">
+      <h1>ابحث عن قطع غيار سيارتك بسهولة ⚙️</h1>
+      <p>جميع الماركات، أفضل الأسعار، توصيل سريع 🚚</p>
+      <button class="btn-shop">تصفح المنتجات</button>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <h3>قطع أصلية 100%</h3>
+        <p>نضمن لك الجودة العالية لجميع منتجاتنا.</p>
+      </div>
+      <div class="feature">
+        <h3>دعم فني سريع</h3>
+        <p>فريقنا جاهز للرد على استفساراتك في أي وقت.</p>
+      </div>
+      <div class="feature">
+        <h3>شحن لجميع المناطق</h3>
+        <p>توصيل سريع وآمن إلى باب منزلك.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ✅ استدعاء الفوتر -->
+  {% include 'footer.html' %}
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: #f8fafc;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .home-content {
+      flex: 1;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 100px 20px;
+      background: linear-gradient(90deg, #00c3ff, #0a74da);
+      color: white;
+    }
+    .hero h1 {
+      font-size: 2.4rem;
+      margin-bottom: 15px;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 25px;
+    }
+    .btn-shop {
+      background: white;
+      color: #0a74da;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-shop:hover {
+      background: #e8f4ff;
+    }
+
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 60px 20px;
+      text-align: center;
+    }
+    .feature {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      flex: 1;
+      max-width: 300px;
+      transition: transform 0.3s;
+    }
+    .feature:hover {
+      transform: translateY(-5px);
+    }
+
+    @media (max-width: 768px) {
+      .features {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</body>
+</html>
