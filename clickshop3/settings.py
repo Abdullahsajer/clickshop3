@@ -1,20 +1,19 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 from django.conf import settings
 
-# 📁 المسار الأساسي للمشروع
+# ✅ تحميل متغيرات البيئة
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
 
-# 🔑 مفتاح التشفير
-SECRET_KEY = 'django-insecure-mwrbq76gclmb8ykb=70@3^0*-e-d(!wxgc17&7bfsp1+86g3&y'
-
-# ⚙️ وضع التطوير
-DEBUG = True
-
-# 🌐 العناوين المسموح بها
-ALLOWED_HOSTS = []
+# 🔑 إعدادات الأمان
+SECRET_KEY = os.getenv("SECRET_KEY")
+DEBUG = os.getenv("DEBUG", "True") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # 📦 التطبيقات المثبتة
 INSTALLED_APPS = [
@@ -30,7 +29,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'sales.apps.SalesConfig',
 
-    # ☁️ إضافة تطبيق Cloudinary
+    # ☁️ تطبيق Cloudinary
     'cloudinary',
     'cloudinary_storage',
 ]
@@ -49,7 +48,7 @@ MIDDLEWARE = [
 # 📍 ملف URLs الجذري
 ROOT_URLCONF = 'clickshop3.urls'
 
-# 🧾 إعدادات القوالب
+# 🧾 إعداد القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -69,13 +68,25 @@ TEMPLATES = [
 # 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
-# 🗄️ قاعدة البيانات
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# 🗄️ إعداد قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv("DEV_DB_ENGINE"),
+            'NAME': BASE_DIR / os.getenv("DEV_DB_NAME"),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': os.getenv("PROD_DB_ENGINE"),
+            'NAME': os.getenv("PROD_DB_NAME"),
+            'USER': os.getenv("PROD_DB_USER"),
+            'PASSWORD': os.getenv("PROD_DB_PASSWORD"),
+            'HOST': os.getenv("PROD_DB_HOST"),
+            'PORT': os.getenv("PROD_DB_PORT"),
+        }
+    }
 
 # 🔐 التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
@@ -91,19 +102,18 @@ TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_TZ = True
 
-# 🖼️ إعداد الملفات الثابتة
+# 🖼️ الملفات الثابتة
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# ☁️ إعداد Cloudinary كخدمة تخزين للوسائط
+# ☁️ إعداد Cloudinary
 cloudinary.config(
-    cloud_name="dkjrjd6jc",
-    api_key="331143126546926",
-    api_secret="xJcHaqSS3qM2UCVrS6_68cEKZd8"
+    cloud_name=os.getenv("CLOUD_NAME"),
+    api_key=os.getenv("CLOUD_API_KEY"),
+    api_secret=os.getenv("CLOUD_API_SECRET"),
 )
 
-# 🖼️ إعداد ملفات الوسائط باستخدام Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
 
