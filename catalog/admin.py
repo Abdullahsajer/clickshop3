@@ -1,31 +1,26 @@
 from django.contrib import admin
 from .models import Category, Product, ProductImage
 
-
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent')
-    search_fields = ('name',)
-    prepopulated_fields = {'slug': ('name',)}
-    list_filter = ('parent',)
-
-
-class ProductImageInline(admin.TabularInline):
+class ProductImageInline(admin.TabularInline):  # يمكن أيضاً استخدام StackedInline
     model = ProductImage
-    extra = 1
+    extra = 1  # عدد الحقول الفارغة المضافة افتراضياً
+    verbose_name = "صورة المنتج"
+    verbose_name_plural = "صور المنتج"
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'stock', 'is_active', 'created_at')
-    search_fields = ('name', 'category__name')
-    list_filter = ('is_active', 'category', 'created_at')
-    prepopulated_fields = {'slug': ('name',)}
-    inlines = [ProductImageInline]
-    ordering = ('-created_at',)
+    list_display = ('name', 'category', 'price', 'stock')
+    list_filter = ('category',)
+    search_fields = ('name', 'description')
+    inlines = [ProductImageInline]  # ✅ دمج الصور هنا داخل صفحة المنتج
 
 
-@admin.register(ProductImage)
-class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ('product', 'alt_text')
-    search_fields = ('product__name',)
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
+# لإزالة ظهور صور المنتجات بشكل مستقل في القائمة الجانبية:
+# admin.site.unregister(ProductImage)

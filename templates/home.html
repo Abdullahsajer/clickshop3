@@ -1,110 +1,187 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>الرئيسية | ASQ لقطع الغيار</title>
+  <title>الرئيسية | متجر ASQ لقطع غيار السيارات</title>
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: #f7f9fc;
+      display: flex;
+      flex-direction: column;
+    }
+    main { flex: 1; }
+
+    /* 🎯 البنر */
+    .banner {
+      background: linear-gradient(135deg, #0066ff, #00ccff);
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .banner h1 { margin: 0; font-size: 34px; font-weight: 700; }
+    .banner p { margin-top: 10px; font-size: 18px; }
+
+    /* 🛍️ المنتجات */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 1px solid #eee;
+    }
+
+    .product-info {
+      padding: 15px;
+      text-align: center;
+    }
+    .product-info h3 {
+      margin: 10px 0 5px;
+      font-size: 18px;
+      color: #0066ff;
+    }
+    .product-info p {
+      margin: 0;
+      color: #666;
+      font-size: 15px;
+    }
+    .product-price {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #0099cc;
+    }
+
+    /* 🧺 زر إضافة للسلة */
+    .add-to-cart {
+      background: linear-gradient(135deg, #00ccff, #0066ff);
+      color: #fff;
+      border: none;
+      padding: 12px 0;
+      font-size: 16px;
+      border-radius: 0 0 16px 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      width: 100%;
+    }
+    .add-to-cart:hover {
+      background: linear-gradient(135deg, #0066ff, #0040cc);
+    }
+
+    footer {
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: auto;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ✅ استدعاء الهيدر -->
   {% include 'header.html' %}
 
-  <main class="home-content">
-    <section class="hero">
-      <h1>ابحث عن قطع غيار سيارتك بسهولة ⚙️</h1>
-      <p>جميع الماركات، أفضل الأسعار، توصيل سريع 🚚</p>
-      <button class="btn-shop">تصفح المنتجات</button>
+  <main>
+    <!-- ✅ البنر -->
+    <section class="banner">
+      <h1>مرحبًا بك في متجر ASQ</h1>
+      <p>أفضل قطع غيار السيارات بأفضل الأسعار 🚗</p>
     </section>
 
-    <section class="features">
-      <div class="feature">
-        <h3>قطع أصلية 100%</h3>
-        <p>نضمن لك الجودة العالية لجميع منتجاتنا.</p>
+    <!-- ✅ عرض المنتجات -->
+    <section class="product-grid">
+      {% for product in products %}
+      <div class="product-card">
+        {% if product.images.all %}
+          <img src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="{% static 'no-image.png' %}" alt="لا توجد صورة">
+        {% endif %}
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.category.name }}</p>
+          <div class="product-price">{{ product.price }} ر.س</div>
+        </div>
+        <button class="add-to-cart" onclick="addToCart('{{ product.id }}', '{{ product.name }}')">
+          🛒 أضف إلى السلة
+        </button>
       </div>
-      <div class="feature">
-        <h3>دعم فني سريع</h3>
-        <p>فريقنا جاهز للرد على استفساراتك في أي وقت.</p>
-      </div>
-      <div class="feature">
-        <h3>شحن لجميع المناطق</h3>
-        <p>توصيل سريع وآمن إلى باب منزلك.</p>
-      </div>
+      {% empty %}
+      <p style="text-align:center; font-size:18px;">🚫 لا توجد منتجات حالياً</p>
+      {% endfor %}
     </section>
   </main>
 
-  <!-- ✅ استدعاء الفوتر -->
   {% include 'footer.html' %}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: "Cairo", sans-serif;
-      background: #f8fafc;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+  <!-- ✅ JavaScript -->
+  <script>
+    // 📦 إضافة المنتج للسلة عبر Fetch API
+    function addToCart(productId, productName) {
+      fetch("{% url 'sales:add_to_cart' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: `product_id=${productId}`,
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert(data.message);
+      })
+      .catch(error => {
+        alert("حدث خطأ أثناء الإضافة إلى السلة ❌");
+        console.error(error);
+      });
     }
 
-    .home-content {
-      flex: 1;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 100px 20px;
-      background: linear-gradient(90deg, #00c3ff, #0a74da);
-      color: white;
-    }
-    .hero h1 {
-      font-size: 2.4rem;
-      margin-bottom: 15px;
-    }
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 25px;
-    }
-    .btn-shop {
-      background: white;
-      color: #0a74da;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1.1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .btn-shop:hover {
-      background: #e8f4ff;
-    }
-
-    .features {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 60px 20px;
-      text-align: center;
-    }
-    .feature {
-      background: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      flex: 1;
-      max-width: 300px;
-      transition: transform 0.3s;
-    }
-    .feature:hover {
-      transform: translateY(-5px);
-    }
-
-    @media (max-width: 768px) {
-      .features {
-        flex-direction: column;
-        align-items: center;
+    // 🧩 دالة لجلب CSRF Token من الكوكيز
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
       }
+      return cookieValue;
     }
-  </style>
+  </script>
+
 </body>
 </html>

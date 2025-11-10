@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إتمام الطلب | ASQ</title>
+  <style>
+    body { font-family: "Cairo", sans-serif; background: #f7f9fc; margin: 0; }
+    main { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h2 { color: #0066ff; text-align: center; }
+    textarea { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-top: 15px; font-size: 16px; }
+    button {
+      display: block; width: 100%; margin-top: 20px; background: linear-gradient(135deg, #00ccff, #0066ff);
+      color: white; border: none; padding: 12px; font-size: 18px; border-radius: 10px; cursor: pointer;
+    }
+    button:hover { background: linear-gradient(135deg, #0066ff, #0040cc); }
+  </style>
+</head>
+<body>
+  {% include 'header.html' %}
+  <main>
+    <h2>💳 إتمام الطلب</h2>
+    <form method="post">
+      {% csrf_token %}
+      <label for="address">📍 عنوان الشحن:</label>
+      <textarea id="address" name="address" rows="3" required></textarea>
+      <button type="submit">تأكيد الطلب ✅</button>
+    </form>
+  </main>
+  {% include 'footer.html' %}
+</body>
+</html>
