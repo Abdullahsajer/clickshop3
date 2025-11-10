@@ -1,9 +1,13 @@
 from pathlib import Path
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from django.conf import settings
 
 # 📁 المسار الأساسي للمشروع
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 🔑 مفتاح التشفير (يجب تغييره في بيئات الإنتاج)
+# 🔑 مفتاح التشفير
 SECRET_KEY = 'django-insecure-mwrbq76gclmb8ykb=70@3^0*-e-d(!wxgc17&7bfsp1+86g3&y'
 
 # ⚙️ وضع التطوير
@@ -12,10 +16,8 @@ DEBUG = True
 # 🌐 العناوين المسموح بها
 ALLOWED_HOSTS = []
 
-
 # 📦 التطبيقات المثبتة
 INSTALLED_APPS = [
-    # 🧩 تطبيقات Django الأساسية
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,14 +25,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # ✅ تطبيقات المشروع المخصصة
-    'accounts.apps.AccountsConfig',  # إدارة الحسابات والمستخدمين
-    'catalog.apps.CatalogConfig',    # إدارة المنتجات والتصنيفات
-    'sales.apps.SalesConfig',        # إدارة الطلبات والسلة
+    # ✅ تطبيقات المشروع
+    'accounts.apps.AccountsConfig',
+    'catalog.apps.CatalogConfig',
+    'sales.apps.SalesConfig',
+
+    # ☁️ إضافة تطبيق Cloudinary
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
-
-# 🧱 الوسائط الوسطية (Middleware)
+# 🧱 الوسائط الوسطية
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -41,19 +46,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
 # 📍 ملف URLs الجذري
 ROOT_URLCONF = 'clickshop3.urls'
 
-
-# 🧾 إعدادات القوالب (Templates)
+# 🧾 إعدادات القوالب
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-
-        # ✅ تعريف مجلد القوالب العام داخل المشروع
         'DIRS': [BASE_DIR / 'templates'],
-
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,19 +66,16 @@ TEMPLATES = [
     },
 ]
 
-
 # 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
-
-# 🗄️ إعداد قاعدة البيانات (SQLite)
+# 🗄️ قاعدة البيانات
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # 🔐 التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
@@ -88,26 +85,27 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# 🌍 إعداد اللغة والمنطقة الزمنية
+# 🌍 اللغة والمنطقة الزمنية
 LANGUAGE_CODE = 'ar'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_TZ = True
 
-
-# 🖼️ إعداد الملفات الثابتة (Static Files)
+# 🖼️ إعداد الملفات الثابتة
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # مجلد الملفات الثابتة أثناء التطوير
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # مجلد تجميع الملفات الثابتة عند النشر
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# ☁️ إعداد Cloudinary كخدمة تخزين للوسائط
+cloudinary.config(
+    cloud_name="dkjrjd6jc",
+    api_key="331143126546926",
+    api_secret="xJcHaqSS3qM2UCVrS6_68cEKZd8"
+)
 
-# 🖼️ إعداد ملفات الوسائط (Media)
+# 🖼️ إعداد ملفات الوسائط باستخدام Cloudinary
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# 🆔 تعريف تلقائي للأعمدة في النماذج
+# 🆔 تعريف تلقائي للأعمدة
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

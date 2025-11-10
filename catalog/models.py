@@ -1,4 +1,6 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
+
 
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name="اسم التصنيف")
@@ -29,7 +31,7 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images', verbose_name="المنتج")
-    image = models.ImageField(upload_to='product_images/', verbose_name="صورة المنتج")
+    image = CloudinaryField(folder='product_images', verbose_name="صورة المنتج")  # ✅ تم تصحيح السطر
 
     class Meta:
         verbose_name = "صورة منتج"
