@@ -2,6 +2,10 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+import dj_database_url
+
 
 # 📁 تحميل متغيرات البيئة
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,13 +14,10 @@ load_dotenv(BASE_DIR / ".env")
 # 🔐 إعدادات الأمان
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-key-in-production")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-
-ALLOWED_HOSTS = [
-    host.strip() for host in os.getenv(
-        "ALLOWED_HOSTS",
-        "clickshop3.onrender.com,127.0.0.1,localhost"
-    ).split(",")
-]
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "clickshop3.onrender.com,127.0.0.1,localhost"
+).split(",")
 
 # 📦 التطبيقات المثبتة
 INSTALLED_APPS = [
@@ -32,7 +33,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'sales.apps.SalesConfig',
 
-    # ☁️ Cloudinary
+    # ☁️ تطبيق Cloudinary
     'cloudinary',
     'cloudinary_storage',
 ]
@@ -41,7 +42,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 
-    # ✅ تحسين الأداء في الإنتاج
+    # ⚙️ دعم الملفات الثابتة في الإنتاج
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -75,7 +76,7 @@ TEMPLATES = [
 # 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
-# 🗄️ إعداد قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
+# 🗄️ قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
 if DEBUG:
     DATABASES = {
         'default': {
@@ -94,6 +95,8 @@ else:
             'PORT': os.getenv("PROD_DB_PORT", "5432"),
         }
     }
+    # دعم إضافي لتفسير رابط قاعدة البيانات في Render إن وُجد
+    DATABASES["default"] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # 🔐 التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
@@ -109,16 +112,15 @@ TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_TZ = True
 
-# 🖼️ الملفات الثابتة
+# 🖼️ الملفات الثابتة (Static files)
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# ✅ ضغط وتحسين ملفات static في الإنتاج
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# ✅ تمكين WhiteNoise لخدمة ملفات static في Render
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ☁️ إعداد Cloudinary
+# ☁️ إعداد Cloudinary للوسائط
 cloudinary.config(
     cloud_name=os.getenv("CLOUD_NAME"),
     api_key=os.getenv("CLOUD_API_KEY"),
@@ -135,24 +137,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[{levelname}] {asctime} — {name}: {message}',
-            'style': '{',
-        },
-    },
     'handlers': {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'errors.log',
-            'formatter': 'verbose',
         },
         'console': {
-            'level': 'WARNING',
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
         },
+    },
+    'root': {
+        'handlers': ['file', 'console'],
+        'level': 'ERROR',
     },
     'loggers': {
         'django': {
