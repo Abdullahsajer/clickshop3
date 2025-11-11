@@ -2,8 +2,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 
 # 📁 تحميل متغيرات البيئة
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,10 +10,13 @@ load_dotenv(BASE_DIR / ".env")
 # 🔐 إعدادات الأمان
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-key-in-production")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv(
-    "ALLOWED_HOSTS",
-    "clickshop3.onrender.com,127.0.0.1,localhost"
-).split(",")
+
+ALLOWED_HOSTS = [
+    host.strip() for host in os.getenv(
+        "ALLOWED_HOSTS",
+        "clickshop3.onrender.com,127.0.0.1,localhost"
+    ).split(",")
+]
 
 # 📦 التطبيقات المثبتة
 INSTALLED_APPS = [
@@ -31,7 +32,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'sales.apps.SalesConfig',
 
-    # ☁️ تطبيق Cloudinary
+    # ☁️ Cloudinary
     'cloudinary',
     'cloudinary_storage',
 ]
@@ -39,6 +40,10 @@ INSTALLED_APPS = [
 # 🧱 الوسائط الوسطية
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # ✅ تحسين الأداء في الإنتاج
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -70,7 +75,7 @@ TEMPLATES = [
 # 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
-# 🗄️ قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
+# 🗄️ إعداد قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
 if DEBUG:
     DATABASES = {
         'default': {
@@ -109,6 +114,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# ✅ ضغط وتحسين ملفات static في الإنتاج
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # ☁️ إعداد Cloudinary
 cloudinary.config(
     cloud_name=os.getenv("CLOUD_NAME"),
@@ -126,20 +135,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} — {name}: {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'file': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'errors.log',
+            'formatter': 'verbose',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
-    },
-    'root': {
-        'handlers': ['file', 'console'],
-        'level': 'ERROR',
     },
     'loggers': {
         'django': {
@@ -149,4 +162,3 @@ LOGGING = {
         },
     },
 }
-
