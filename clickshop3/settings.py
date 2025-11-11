@@ -4,16 +4,18 @@ from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from django.conf import settings
 
-# ✅ تحميل متغيرات البيئة
+# 📁 تحميل متغيرات البيئة
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-# 🔑 إعدادات الأمان
-SECRET_KEY = os.getenv("SECRET_KEY")
+# 🔐 إعدادات الأمان
+SECRET_KEY = os.getenv("SECRET_KEY", "change-this-key-in-production")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "clickshop3.onrender.com,127.0.0.1,localhost"
+).split(",")
 
 # 📦 التطبيقات المثبتة
 INSTALLED_APPS = [
@@ -68,23 +70,23 @@ TEMPLATES = [
 # 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
-# 🗄️ إعداد قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
+# 🗄️ قاعدة البيانات (تبديل تلقائي بين التطوير والإنتاج)
 if DEBUG:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv("DEV_DB_ENGINE"),
-            'NAME': BASE_DIR / os.getenv("DEV_DB_NAME"),
+            'ENGINE': os.getenv("DEV_DB_ENGINE", "django.db.backends.sqlite3"),
+            'NAME': BASE_DIR / os.getenv("DEV_DB_NAME", "db.sqlite3"),
         }
     }
 else:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv("PROD_DB_ENGINE"),
+            'ENGINE': os.getenv("PROD_DB_ENGINE", "django.db.backends.postgresql"),
             'NAME': os.getenv("PROD_DB_NAME"),
             'USER': os.getenv("PROD_DB_USER"),
             'PASSWORD': os.getenv("PROD_DB_PASSWORD"),
             'HOST': os.getenv("PROD_DB_HOST"),
-            'PORT': os.getenv("PROD_DB_PORT"),
+            'PORT': os.getenv("PROD_DB_PORT", "5432"),
         }
     }
 
@@ -119,3 +121,32 @@ MEDIA_URL = '/media/'
 
 # 🆔 تعريف تلقائي للأعمدة
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 🧠 نظام تسجيل الأخطاء (LOGGING)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'errors.log',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['file', 'console'],
+        'level': 'ERROR',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
