@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import sys
 from dotenv import load_dotenv
 import cloudinary
 import cloudinary.uploader
@@ -12,7 +13,8 @@ load_dotenv(BASE_DIR / ".env")
 
 # 🔐 إعدادات الأمان
 SECRET_KEY = os.getenv("SECRET_KEY", "change-this-key-in-production")
-DEBUG = os.getenv("DEBUG", "True") == "True"
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ENVIRONMENT = os.getenv("ENVIRONMENT", "production")
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
@@ -33,7 +35,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'sales.apps.SalesConfig',
 
-    # ☁️ تطبيق Cloudinary
+    # ☁️ Cloudinary
     'cloudinary',
     'cloudinary_storage',
 ]
@@ -41,10 +43,7 @@ INSTALLED_APPS = [
 # 🧱 الوسائط الوسطية (Middleware)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
-    # ✅ دعم الملفات الثابتة في الإنتاج
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ✅ الملفات الثابتة في Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,24 +75,42 @@ TEMPLATES = [
 # 🧩 إعداد WSGI
 WSGI_APPLICATION = 'clickshop3.wsgi.application'
 
-# 🗄️ إعداد قاعدة البيانات (SQLite محلياً - PostgreSQL على Render)
-if DEBUG:
-    # قاعدة البيانات المحلية (تطوير)
+# 🗄️ إعداد قاعدة البيانات (ذكي بين التطوير والإنتاج)
+if ENVIRONMENT == "development" or DEBUG:
+    # 💻 بيئة التطوير
     DATABASES = {
-        'default': {
-            'ENGINE': os.getenv("DEV_DB_ENGINE", "django.db.backends.sqlite3"),
-            'NAME': BASE_DIR / os.getenv("DEV_DB_NAME", "db.sqlite3"),
+        "default": {
+            "ENGINE": os.getenv("DEV_DB_ENGINE", "django.db.backends.sqlite3"),
+            "NAME": BASE_DIR / os.getenv("DEV_DB_NAME", "db.sqlite3"),
         }
     }
 else:
-    # قاعدة البيانات في بيئة الإنتاج (Render)
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv("DATABASE_URL"),
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
+    # ☁️ بيئة الإنتاج (Render أو خادم حقيقي)
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        DATABASES = {
+            "default": dj_database_url.config(
+                default=db_url,
+                conn_max_age=600,
+                ssl_require=True
+            )
+        }
+    else:
+        # 🔹 fallback من القيم اليدوية في .env
+        DATABASES = {
+            "default": {
+                "ENGINE": os.getenv("PROD_DB_ENGINE", "django.db.backends.postgresql"),
+                "NAME": os.getenv("PROD_DB_NAME"),
+                "USER": os.getenv("PROD_DB_USER"),
+                "PASSWORD": os.getenv("PROD_DB_PASSWORD"),
+                "HOST": os.getenv("PROD_DB_HOST"),
+                "PORT": os.getenv("PROD_DB_PORT", "5432"),
+            }
+        }
+
+# ✅ تأكيد نوع قاعدة البيانات المستخدمة في السجلات
+active_engine = DATABASES["default"]["ENGINE"]
+print(f"🔍 Active Database Engine: {active_engine}")
 
 # 🔐 التحقق من كلمات المرور
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,11 +131,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# ✅ تفعيل WhiteNoise لتقديم الملفات الثابتة في Render
+# ✅ WhiteNoise في الإنتاج
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# ☁️ إعداد Cloudinary للوسائط (Media)
+# ☁️ إعداد Cloudinary
 cloudinary.config(
     cloud_name=os.getenv("CLOUD_NAME"),
     api_key=os.getenv("CLOUD_API_KEY"),
