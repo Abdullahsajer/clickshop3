@@ -118,8 +118,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # ✅ تمكين WhiteNoise لخدمة ملفات static في Render
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
+if not DEBUG:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 # ☁️ إعداد Cloudinary للوسائط
 cloudinary.config(
     cloud_name=os.getenv("CLOUD_NAME"),
@@ -129,6 +129,11 @@ cloudinary.config(
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+
+
 
 # 🆔 تعريف تلقائي للأعمدة
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
