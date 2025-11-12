@@ -4,17 +4,17 @@
   <div class="header-container">
     <div class="logo">⚙️ ASQ AutoParts</div>
 
-    <nav class="nav-bar">
+     <nav class="nav-bar">
       <a href="/">الرئيسية</a>
-      <a href="/catalog/">المتجر</a>
+      <a href="/">المتجر</a>
       <a href="/offers/">العروض</a>
       <a href="/contact/">تواصل معنا</a>
-    </nav>
+    </nav> 
 
     <div class="user-actions">
       <a href="/accounts/register/" class="btn-register">إنشاء حساب</a>
       <a href="/accounts/login/" class="btn-login">تسجيل الدخول</a>
-      <a href="/sales/cart/" class="btn-cart">🛒 السلة</a>
+      <a href="/sales/cart/" class="btn-cart">  🛒 السلة{% if cart_count > 0 %} ({{ cart_count }}){% endif %}</a>
       <a href="{% url 'sales:my_orders' %}">طلباتي</a>
 
     </div>

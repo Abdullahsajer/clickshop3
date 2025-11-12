@@ -62,3 +62,8 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} × {self.product}"
+
+    # ✅ دالة لحساب الإجمالي الكلي للسلة
+    @property
+    def total_price(self):
+        return sum(item.product.price * item.quantity for item in self.items.all())
